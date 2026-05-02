@@ -467,7 +467,7 @@
         <span class="listing-tag">AI Chatbots</span>
         <span class="listing-seller">by anonymous seller</span>
       </div>
-      <button class="btn-buy">View & Buy →</button>
+      <button class="btn-buy" onclick="buyProduct('prod_001')">View & Buy →</button>
     </div>
 
     <div class="listing-card">
@@ -481,7 +481,7 @@
         <span class="listing-tag">Trading Bots</span>
         <span class="listing-seller">by anonymous seller</span>
       </div>
-      <button class="btn-buy">View & Buy →</button>
+      <button class="btn-buy" onclick="buyProduct('prod_002')">View & Buy →</button>
     </div>
 
     <div class="listing-card">
@@ -495,7 +495,7 @@
         <span class="listing-tag">Automation</span>
         <span class="listing-seller">by anonymous seller</span>
       </div>
-      <button class="btn-buy">View & Buy →</button>
+      <button class="btn-buy" onclick="buyProduct('prod_003')">View & Buy →</button>
     </div>
 
     <div class="listing-card">
@@ -509,7 +509,7 @@
         <span class="listing-tag">Prompt Packs</span>
         <span class="listing-seller">by anonymous seller</span>
       </div>
-      <button class="btn-buy">View & Buy →</button>
+      <button class="btn-buy" onclick="buyProduct('prod_004')">View & Buy →</button>
     </div>
 
     <div class="listing-card">
@@ -523,7 +523,7 @@
         <span class="listing-tag">Automation</span>
         <span class="listing-seller">by anonymous seller</span>
       </div>
-      <button class="btn-buy">View & Buy →</button>
+      <button class="btn-buy" onclick="buyProduct('prod_005')">View & Buy →</button>
     </div>
 
     <div class="listing-card">
@@ -537,7 +537,7 @@
         <span class="listing-tag">AI Templates</span>
         <span class="listing-seller">by anonymous seller</span>
       </div>
-      <button class="btn-buy">View & Buy →</button>
+      <button class="btn-buy" onclick="buyProduct('prod_006')">View & Buy →</button>
     </div>
 
   </div>
@@ -602,10 +602,10 @@
   <h2>Love the Marketplace?</h2>
   <p>We built this platform to make AI tools accessible to everyone. If it's been useful, consider supporting us with a small tip.</p>
   <div class="tip-amounts">
-    <button class="tip-btn">☕ £3</button>
-    <button class="tip-btn featured">🍕 £5</button>
-    <button class="tip-btn">🎉 £10</button>
-    <button class="tip-btn">💎 £25</button>
+    <button class="tip-btn" onclick="sendTip(3)">☕ £3</button>
+    <button class="tip-btn featured" onclick="sendTip(5)">🍕 £5</button>
+    <button class="tip-btn" onclick="sendTip(10)">🎉 £10</button>
+    <button class="tip-btn" onclick="sendTip(25)">💎 £25</button>
   </div>
   <p style="font-size:13px;color:var(--slate);">Tips go directly to maintaining and improving the marketplace</p>
 </div>
@@ -626,5 +626,45 @@
   <p style="margin-top:24px;font-size:12px;">© 2026 Hardin AI Solutions Ltd. All rights reserved. Company No. 17149514</p>
 </footer>
 
+<script>
+  // Buy product — calls backend to create Stripe checkout
+  async function buyProduct(productId) {
+    const btn = event.target;
+    btn.textContent = 'Loading...';
+    btn.disabled = true;
+    try {
+      const res = await fetch(`/api/checkout/${productId}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      } else {
+        alert('Error: ' + (data.error || 'Unknown error'));
+        btn.textContent = 'View & Buy →';
+        btn.disabled = false;
+      }
+    } catch(e) {
+      alert('Connection error. Please try again.');
+      btn.textContent = 'View & Buy →';
+      btn.disabled = false;
+    }
+  }
+
+  // Tip/donate
+  async function sendTip(amount) {
+    try {
+      const res = await fetch('/api/tip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount })
+      });
+      const data = await res.json();
+      if (data.checkout_url) {
+        window.location.href = data.checkout_url;
+      }
+    } catch(e) {
+      alert('Connection error. Please try again.');
+    }
+  }
+</script>
 </body>
 </html>
