@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Panel — Hardin AI Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --indigo:#4f46e5; --indigo-dark:#3730a3; --indigo-light:#eef2ff;
+    --slate:#64748b; --slate-light:#f1f5f9; --white:#ffffff; --bg:#fafafa;
+    --text:#0f172a; --text-dim:#475569; --border:#e2e8f0;
+    --green:#059669; --green-light:#ecfdf5;
+    --red:#dc2626; --red-light:#fef2f2;
+    --yellow:#d97706; --yellow-light:#fffbeb;
+    --radius:12px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); }
+
+  /* Login */
+  .login-wrap {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#eef2ff,#faf5ff);
+  }
+  .login-card {
+    background:var(--white); border:1px solid var(--border); border-radius:16px;
+    padding:48px; width:400px; box-shadow:0 4px 6px rgba(0,0,0,0.07);
+  }
+  .login-logo { font-size:20px; font-weight:700; color:var(--text); margin-bottom:8px; }
+  .login-logo span { color:var(--indigo); }
+  .login-sub { font-size:14px; color:var(--slate); margin-bottom:32px; }
+  .form-group { margin-bottom:20px; }
+  .form-group label { display:block; font-size:13px; font-weight:600; color:var(--text); margin-bottom:6px; }
+  .form-group input {
+    width:100%; padding:12px 16px; border:1.5px solid var(--border); border-radius:8px;
+    font-size:14px; font-family:'Inter',sans-serif; outline:none; transition:border 0.2s;
+  }
+  .form-group input:focus { border-color:var(--indigo); }
+  .btn-login {
+    width:100%; padding:14px; background:var(--indigo); color:#fff; border:none;
+    border-radius:8px; font-size:15px; font-weight:600; cursor:pointer;
+    font-family:'Inter',sans-serif; transition:background 0.2s;
+  }
+  .btn-login:hover { background:var(--indigo-dark); }
+  .error-msg { color:var(--red); font-size:13px; margin-top:12px; text-align:center; }
+
+  /* Admin layout */
+  .admin-wrap { display:none; min-height:100vh; }
+  .sidebar {
+    width:240px; background:var(--text); position:fixed; top:0; left:0; bottom:0;
+    padding:24px 0; display:flex; flex-direction:column;
+  }
+  .sidebar-logo {
+    padding:0 24px 24px; border-bottom:1px solid rgba(255,255,255,0.08);
+    font-size:16px; font-weight:700; color:#fff;
+  }
+  .sidebar-logo span { color:#818cf8; }
+  .sidebar-nav { padding:16px 0; flex:1; }
+  .nav-item {
+    display:flex; align-items:center; gap:12px; padding:12px 24px;
+    font-size:14px; font-weight:500; color:rgba(255,255,255,0.6);
+    cursor:pointer; transition:all 0.2s; border-left:3px solid transparent;
+  }
+  .nav-item:hover { color:#fff; background:rgba(255,255,255,0.05); }
+  .nav-item.active { color:#fff; background:rgba(79,70,229,0.2); border-left-color:var(--indigo); }
+  .nav-item .icon { font-size:18px; width:24px; }
+  .sidebar-footer {
+    padding:16px 24px; border-top:1px solid rgba(255,255,255,0.08);
+    font-size:12px; color:rgba(255,255,255,0.3);
+  }
+  .main { margin-left:240px; padding:32px; }
+  .page-header { margin-bottom:28px; }
+  .page-title { font-size:24px; font-weight:700; color:var(--text); }
+  .page-sub { font-size:14px; color:var(--slate); margin-top:4px; }
+
+  /* Stats */
+  .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:28px; }
+  .stat-card {
+    background:var(--white); border:1px solid var(--border); border-radius:var(--radius);
+    padding:20px 24px;
+  }
+  .stat-card .label { font-size:12px; color:var(--slate); letter-spacing:0.5px; text-transform:uppercase; margin-bottom:8px; }
+  .stat-card .value { font-size:32px; font-weight:800; color:var(--text); }
+  .stat-card .value.green { color:var(--green); }
+  .stat-card .value.indigo { color:var(--indigo); }
+  .stat-card .value.yellow { color:var(--yellow); }
+
+  /* Table */
+  .table-wrap {
+    background:var(--white); border:1px solid var(--border); border-radius:var(--radius);
+    overflow:hidden; margin-bottom:24px;
+  }
+  .table-header {
+    padding:16px 24px; border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .table-title { font-size:16px; font-weight:600; color:var(--text); }
+  table { width:100%; border-collapse:collapse; }
+  th {
+    text-align:left; padding:12px 24px; font-size:12px; font-weight:600;
+    color:var(--slate); text-transform:uppercase; letter-spacing:0.5px;
+    background:var(--slate-light); border-bottom:1px solid var(--border);
+  }
+  td { padding:16px 24px; font-size:14px; border-bottom:1px solid var(--border); }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#fafafa; }
+
+  /* Badges */
+  .badge {
+    display:inline-flex; align-items:center; gap:4px; padding:4px 10px;
+    border-radius:6px; font-size:12px; font-weight:600;
+  }
+  .badge-pending { background:var(--yellow-light); color:var(--yellow); }
+  .badge-approved { background:var(--green-light); color:var(--green); }
+  .badge-rejected { background:var(--red-light); color:var(--red); }
+  .badge-paid { background:var(--indigo-light); color:var(--indigo); }
+
+  /* Action buttons */
+  .btn-sm {
+    padding:6px 14px; border-radius:6px; font-size:12px; font-weight:600;
+    cursor:pointer; border:none; font-family:'Inter',sans-serif; transition:all 0.2s;
+  }
+  .btn-approve { background:var(--green-light); color:var(--green); }
+  .btn-approve:hover { background:var(--green); color:#fff; }
+  .btn-reject { background:var(--red-light); color:var(--red); }
+  .btn-reject:hover { background:var(--red); color:#fff; }
+  .btn-view { background:var(--indigo-light); color:var(--indigo); }
+  .btn-view:hover { background:var(--indigo); color:#fff; }
+
+  /* Tabs */
+  .tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:24px; }
+  .tab {
+    padding:12px 20px; font-size:14px; font-weight:500; color:var(--slate);
+    cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s;
+  }
+  .tab.active { color:var(--indigo); border-bottom-color:var(--indigo); }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+
+  /* Empty state */
+  .empty { text-align:center; padding:48px; color:var(--slate); font-size:14px; }
+  .empty .icon { font-size:48px; margin-bottom:12px; }
+
+  /* Modal */
+  .modal-overlay {
+    display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5);
+    z-index:1000; align-items:center; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal {
+    background:var(--white); border-radius:16px; padding:32px;
+    width:560px; max-height:80vh; overflow-y:auto;
+    box-shadow:0 20px 25px rgba(0,0,0,0.15);
+  }
+  .modal-title { font-size:20px; font-weight:700; margin-bottom:20px; }
+  .modal-field { margin-bottom:16px; }
+  .modal-field label { font-size:12px; font-weight:600; color:var(--slate); text-transform:uppercase; letter-spacing:0.5px; }
+  .modal-field p { font-size:14px; color:var(--text); margin-top:4px; line-height:1.6; }
+  .modal-actions { display:flex; gap:12px; margin-top:24px; padding-top:20px; border-top:1px solid var(--border); }
+  .btn-modal {
+    flex:1; padding:12px; border-radius:8px; font-size:14px; font-weight:600;
+    cursor:pointer; border:none; font-family:'Inter',sans-serif;
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-logo">Hardin<span>AI</span> Marketplace</div>
+    <div class="login-sub">Admin Panel — Authorised Access Only</div>
+    <div class="form-group">
+      <label>Admin Password</label>
+      <input type="password" id="adminPass" placeholder="Enter admin password" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <button class="btn-login" onclick="login()">Sign In →</button>
+    <div class="error-msg" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-wrap" id="adminWrap">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">Hardin<span>AI</span> Admin</div>
+    <div class="sidebar-nav">
+      <div class="nav-item active" onclick="showTab('submissions')"><span class="icon">📋</span> Submissions</div>
+      <div class="nav-item" onclick="showTab('listings')"><span class="icon">✅</span> Live Listings</div>
+      <div class="nav-item" onclick="showTab('sales')"><span class="icon">💰</span> Sales</div>
+      <div class="nav-item" onclick="showTab('stats')"><span class="icon">📊</span> Stats</div>
+    </div>
+    <div class="sidebar-footer">Hardin AI Solutions © 2026</div>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="label">Pending Review</div><div class="value yellow" id="statPending">0</div></div>
+      <div class="stat-card"><div class="label">Live Listings</div><div class="value indigo" id="statLive">6</div></div>
+      <div class="stat-card"><div class="label">Total Sales</div><div class="value green" id="statSales">0</div></div>
+      <div class="stat-card"><div class="label">Revenue</div><div class="value green" id="statRevenue">£0</div></div>
+    </div>
+
+    <!-- Submissions Tab -->
+    <div class="tab-content active" id="tab-submissions">
+      <div class="page-header">
+        <div class="page-title">Tool Submissions</div>
+        <div class="page-sub">Review and approve or reject submitted AI tools</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Pending Review</div>
+          <button class="btn-sm btn-view" onclick="loadSubmissions()">🔄 Refresh</button>
+        </div>
+        <div id="submissionsTable">
+          <div class="empty"><div class="icon">📭</div>No pending submissions</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Listings Tab -->
+    <div class="tab-content" id="tab-listings">
+      <div class="page-header">
+        <div class="page-title">Live Listings</div>
+        <div class="page-sub">All verified tools currently on the marketplace</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Verified Tools</div>
+        </div>
+        <table>
+          <thead><tr><th>Tool Name</th><th>Category</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody>
+            <tr><td><strong>GPT Customer Support Bot</strong></td><td>AI Chatbots</td><td>£29</td><td><span class="badge badge-approved">✓ Live</span></td><td><button class="btn-sm btn-view">View</button></td></tr>
+            <tr><td><strong>Stock Trading Signal Bot</strong></td><td>Trading Bots</td><td>£49</td><td><span class="badge badge-approved">✓ Live</span></td><td><button class="btn-sm btn-view">View</button></td></tr>
+            <tr><td><strong>LinkedIn Automation Script</strong></td><td>Automation</td><td>£19</td><td><span class="badge badge-approved">✓ Live</span></td><td><button class="btn-sm btn-view">View</button></td></tr>
+            <tr><td><strong>ChatGPT Prompt Pack</strong></td><td>Prompt Packs</td><td>£9</td><td><span class="badge badge-approved">✓ Live</span></td><td><button class="btn-sm btn-view">View</button></td></tr>
+            <tr><td><strong>Invoice Generator AI</strong></td><td>Automation</td><td>£15</td><td><span class="badge badge-approved">✓ Live</span></td><td><button class="btn-sm btn-view">View</button></td></tr>
+            <tr><td><strong>SEO Content Bot</strong></td><td>AI Templates</td><td>£35</td><td><span class="badge badge-approved">✓ Live</span></td><td><button class="btn-sm btn-view">View</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Sales Tab -->
+    <div class="tab-content" id="tab-sales">
+      <div class="page-header">
+        <div class="page-title">Sales</div>
+        <div class="page-sub">All completed transactions</div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-header">
+          <div class="table-title">Recent Sales</div>
+          <button class="btn-sm btn-view" onclick="loadSales()">🔄 Refresh</button>
+        </div>
+        <div id="salesTable">
+          <div class="empty"><div class="icon">💳</div>No sales yet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Tab -->
+    <div class="tab-content" id="tab-stats">
+      <div class="page-header">
+        <div class="page-title">Statistics</div>
+        <div class="page-sub">Marketplace performance overview</div>
+      </div>
+      <div class="table-wrap" style="padding:32px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+          <div>
+            <div style="font-size:13px;color:var(--slate);margin-bottom:8px;">TOTAL LISTINGS</div>
+            <div style="font-size:48px;font-weight:800;color:var(--indigo);">6</div>
+          </div>
+          <div>
+            <div style="font-size:13px;color:var(--slate);margin-bottom:8px;">CATEGORIES</div>
+            <div style="font-size:48px;font-weight:800;color:var(--indigo);">6</div>
+          </div>
+          <div>
+            <div style="font-size:13px;color:var(--slate);margin-bottom:8px;">TOTAL SALES</div>
+            <div style="font-size:48px;font-weight:800;color:var(--green);" id="totalSales">0</div>
+          </div>
+          <div>
+            <div style="font-size:13px;color:var(--slate);margin-bottom:8px;">TOTAL REVENUE</div>
+            <div style="font-size:48px;font-weight:800;color:var(--green);" id="totalRevenue">£0</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <div class="modal-title">Review Submission</div>
+    <div id="modalContent"></div>
+    <div class="modal-actions">
+      <button class="btn-modal" style="background:var(--green-light);color:var(--green);" onclick="approveSubmission()">✅ Approve & List</button>
+      <button class="btn-modal" style="background:var(--red-light);color:var(--red);" onclick="rejectSubmission()">❌ Reject</button>
+      <button class="btn-modal" style="background:var(--slate-light);color:var(--slate);" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const ADMIN_TOKEN = 'hardinai-admin-2026';
+  let currentSubmission = null;
+
+  function login() {
+    const pass = document.getElementById('adminPass').value;
+    if (pass === ADMIN_TOKEN) {
+      document.getElementById('loginWrap').style.display = 'none';
+      document.getElementById('adminWrap').style.display = 'flex';
+      loadSubmissions();
+      loadSales();
+    } else {
+      document.getElementById('loginError').textContent = 'Incorrect password';
+    }
+  }
+
+  function showTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.closest('.nav-item').classList.add('active');
+  }
+
+  async function loadSubmissions() {
+    try {
+      const res = await fetch('/api/admin/submissions', {
+        headers: { 'X-Admin-Token': ADMIN_TOKEN }
+      });
+      const data = await res.json();
+      const pending = data.filter(s => s.status === 'pending_review');
+      document.getElementById('statPending').textContent = pending.length;
+
+      if (pending.length === 0) {
+        document.getElementById('submissionsTable').innerHTML = '<div class="empty"><div class="icon">📭</div>No pending submissions</div>';
+        return;
+      }
+
+      let html = '<table><thead><tr><th>Tool Name</th><th>Category</th><th>Price</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead><tbody>';
+      pending.forEach((s, i) => {
+        html += `<tr>
+          <td><strong>${s.tool_name || 'Unknown'}</strong><br><small style="color:var(--slate)">${s.email || ''}</small></td>
+          <td>${s.category || '—'}</td>
+          <td>£${s.price || '—'}</td>
+          <td>${s.submitted_at ? s.submitted_at.slice(0,10) : '—'}</td>
+          <td><span class="badge badge-pending">⏳ Pending</span></td>
+          <td>
+            <button class="btn-sm btn-view" onclick="reviewSubmission(${i})">Review</button>
+          </td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('submissionsTable').innerHTML = html;
+      window._submissions = pending;
+    } catch(e) {
+      document.getElementById('submissionsTable').innerHTML = '<div class="empty">Error loading submissions</div>';
+    }
+  }
+
+  async function loadSales() {
+    try {
+      const res = await fetch('/api/admin/sales', {
+        headers: { 'X-Admin-Token': ADMIN_TOKEN }
+      });
+      const data = await res.json();
+      const total = data.length;
+      const revenue = data.reduce((sum, s) => sum + (s.amount || 0), 0);
+
+      document.getElementById('statSales').textContent = total;
+      document.getElementById('statRevenue').textContent = '£' + revenue.toFixed(2);
+      document.getElementById('totalSales').textContent = total;
+      document.getElementById('totalRevenue').textContent = '£' + revenue.toFixed(2);
+
+      if (total === 0) {
+        document.getElementById('salesTable').innerHTML = '<div class="empty"><div class="icon">💳</div>No sales yet</div>';
+        return;
+      }
+
+      let html = '<table><thead><tr><th>Product</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead><tbody>';
+      [...data].reverse().forEach(s => {
+        html += `<tr>
+          <td><strong>${s.product_name}</strong></td>
+          <td>£${s.amount}</td>
+          <td>${s.date ? s.date.slice(0,10) : '—'}</td>
+          <td><span class="badge badge-paid">✓ Paid</span></td>
+        </tr>`;
+      });
+      html += '</tbody></table>';
+      document.getElementById('salesTable').innerHTML = html;
+    } catch(e) {}
+  }
+
+  function reviewSubmission(index) {
+    const s = window._submissions[index];
+    currentSubmission = s;
+    document.getElementById('modalContent').innerHTML = `
+      <div class="modal-field"><label>Tool Name</label><p>${s.tool_name}</p></div>
+      <div class="modal-field"><label>Category</label><p>${s.category}</p></div>
+      <div class="modal-field"><label>Price</label><p>£${s.price}</p></div>
+      <div class="modal-field"><label>Description</label><p>${s.description}</p></div>
+      <div class="modal-field"><label>Seller Email</label><p>${s.email}</p></div>
+      <div class="modal-field"><label>Submitted</label><p>${s.submitted_at}</p></div>
+    `;
+    document.getElementById('reviewModal').classList.add('open');
+  }
+
+  function closeModal() {
+    document.getElementById('reviewModal').classList.remove('open');
+    currentSubmission = null;
+  }
+
+  async function approveSubmission() {
+    if (!currentSubmission) return;
+    await fetch('/api/admin/approve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': ADMIN_TOKEN },
+      body: JSON.stringify({ email: currentSubmission.email, tool_name: currentSubmission.tool_name })
+    });
+    closeModal();
+    loadSubmissions();
+    alert('✅ Submission approved! Seller will be notified.');
+  }
+
+  async function rejectSubmission() {
+    if (!currentSubmission) return;
+    await fetch('/api/admin/reject', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': ADMIN_TOKEN },
+      body: JSON.stringify({ email: currentSubmission.email, tool_name: currentSubmission.tool_name })
+    });
+    closeModal();
+    loadSubmissions();
+    alert('❌ Submission rejected. Seller will be notified.');
+  }
+</script>
+</body>
+</html>

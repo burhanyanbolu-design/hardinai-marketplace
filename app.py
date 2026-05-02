@@ -277,7 +277,6 @@ def submit_tool():
 @app.route('/api/admin/submissions')
 def admin_submissions():
     """Admin view of pending submissions"""
-    # Simple auth check
     token = request.headers.get('X-Admin-Token')
     if token != os.getenv('ADMIN_TOKEN', 'hardinai-admin-2026'):
         return jsonify({'error': 'Unauthorized'}), 401
@@ -286,6 +285,59 @@ def admin_submissions():
             return jsonify(json.load(f))
     except Exception:
         return jsonify([])
+
+@app.route('/api/admin/sales')
+def admin_sales():
+    """Admin view of all sales"""
+    token = request.headers.get('X-Admin-Token')
+    if token != os.getenv('ADMIN_TOKEN', 'hardinai-admin-2026'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    try:
+        with open('data/sales.json') as f:
+            return jsonify(json.load(f))
+    except Exception:
+        return jsonify([])
+
+@app.route('/api/admin/approve', methods=['POST'])
+def admin_approve():
+    """Approve a submission"""
+    token = request.headers.get('X-Admin-Token')
+    if token != os.getenv('ADMIN_TOKEN', 'hardinai-admin-2026'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    data = request.json or {}
+    # Update submission status
+    try:
+        with open('data/submissions.json') as f:
+            submissions = json.load(f)
+        for s in submissions:
+            if s.get('email') == data.get('email') and s.get('tool_name') == data.get('tool_name'):
+                s['status'] = 'approved'
+                s['approved_at'] = datetime.now().isoformat()
+        with open('data/submissions.json', 'w') as f:
+            json.dump(submissions, f, indent=2)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    return jsonify({'success': True})
+
+@app.route('/api/admin/reject', methods=['POST'])
+def admin_reject():
+    """Reject a submission"""
+    token = request.headers.get('X-Admin-Token')
+    if token != os.getenv('ADMIN_TOKEN', 'hardinai-admin-2026'):
+        return jsonify({'error': 'Unauthorized'}), 401
+    data = request.json or {}
+    try:
+        with open('data/submissions.json') as f:
+            submissions = json.load(f)
+        for s in submissions:
+            if s.get('email') == data.get('email') and s.get('tool_name') == data.get('tool_name'):
+                s['status'] = 'rejected'
+                s['rejected_at'] = datetime.now().isoformat()
+        with open('data/submissions.json', 'w') as f:
+            json.dump(submissions, f, indent=2)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    return jsonify({'success': True})
 
 def _log_sale(session, product_id, product):
     """Log completed sale"""
