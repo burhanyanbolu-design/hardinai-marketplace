@@ -77,6 +77,10 @@ PRODUCTS = {
 def index():
     return app.send_static_file('index.html')
 
+@app.route('/admin')
+def admin():
+    return app.send_static_file('admin.html')
+
 @app.route('/api/products')
 def get_products():
     """Return all verified products"""
