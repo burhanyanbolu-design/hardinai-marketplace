@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hardin AI Marketplace — Verified AI Tools & Bots</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --indigo: #4f46e5;
+    --indigo-dark: #3730a3;
+    --indigo-light: #eef2ff;
+    --slate: #64748b;
+    --slate-light: #f1f5f9;
+    --white: #ffffff;
+    --bg: #fafafa;
+    --text: #0f172a;
+    --text-dim: #475569;
+    --border: #e2e8f0;
+    --green: #059669;
+    --green-light: #ecfdf5;
+    --radius: 12px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.08), 0 4px 6px rgba(0,0,0,0.04);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); line-height:1.6; }
+  a { text-decoration:none; color:inherit; }
+
+  /* ── NAV ── */
+  nav {
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+    padding:0 40px;
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    position:sticky;
+    top:0;
+    z-index:100;
+  }
+  .nav-logo {
+    font-size:18px;
+    font-weight:700;
+    color:var(--text);
+  }
+  .nav-logo span { color:var(--indigo); }
+  .nav-links {
+    display:flex;
+    align-items:center;
+    gap:32px;
+    list-style:none;
+  }
+  .nav-links a {
+    font-size:14px;
+    font-weight:500;
+    color:var(--slate);
+    transition:color 0.2s;
+  }
+  .nav-links a:hover { color:var(--indigo); }
+  .btn {
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:10px 20px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all 0.2s;
+    border:none;
+  }
+  .btn-primary { background:var(--indigo); color:#fff; }
+  .btn-primary:hover { background:var(--indigo-dark); transform:translateY(-1px); box-shadow:var(--shadow-md); }
+  .btn-outline { background:transparent; color:var(--indigo); border:1.5px solid var(--indigo); }
+  .btn-outline:hover { background:var(--indigo-light); }
+  .btn-lg { padding:14px 28px; font-size:15px; border-radius:10px; }
+
+  /* ── HERO ── */
+  .hero {
+    background:linear-gradient(135deg, #f8faff 0%, #eef2ff 50%, #faf5ff 100%);
+    padding:80px 40px;
+    text-align:center;
+    border-bottom:1px solid var(--border);
+  }
+  .hero-badge {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:var(--indigo-light);
+    color:var(--indigo);
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:24px;
+    border:1px solid rgba(79,70,229,0.2);
+  }
+  .hero h1 {
+    font-size:56px;
+    font-weight:800;
+    line-height:1.1;
+    color:var(--text);
+    margin-bottom:20px;
+    letter-spacing:-1px;
+  }
+  .hero h1 span { color:var(--indigo); }
+  .hero p {
+    font-size:18px;
+    color:var(--text-dim);
+    max-width:560px;
+    margin:0 auto 36px;
+    line-height:1.7;
+  }
+  .hero-ctas { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:40px; }
+  .search-bar {
+    display:flex;
+    max-width:520px;
+    margin:0 auto;
+    background:var(--white);
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:var(--shadow-md);
+  }
+  .search-bar input {
+    flex:1;
+    padding:14px 20px;
+    border:none;
+    outline:none;
+    font-size:15px;
+    font-family:'Inter',sans-serif;
+    color:var(--text);
+    background:transparent;
+  }
+  .search-bar button {
+    padding:14px 24px;
+    background:var(--indigo);
+    color:#fff;
+    border:none;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+
+  /* ── STATS ── */
+  .stats {
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+    padding:24px 40px;
+    display:flex;
+    justify-content:center;
+    gap:60px;
+    flex-wrap:wrap;
+  }
+  .stat-item { text-align:center; }
+  .stat-num { font-size:24px; font-weight:800; color:var(--indigo); }
+  .stat-label { font-size:13px; color:var(--slate); margin-top:2px; }
+
+  /* ── SECTION ── */
+  .section { padding:64px 40px; max-width:1200px; margin:0 auto; }
+  .section-title { font-size:28px; font-weight:700; color:var(--text); margin-bottom:8px; }
+  .section-sub { font-size:15px; color:var(--text-dim); margin-bottom:36px; }
+
+  /* ── CATEGORIES ── */
+  .categories-grid {
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:16px;
+  }
+  .category-card {
+    background:var(--white);
+    border:1.5px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px 16px;
+    text-align:center;
+    cursor:pointer;
+    transition:all 0.2s;
+  }
+  .category-card:hover {
+    border-color:var(--indigo);
+    box-shadow:var(--shadow-md);
+    transform:translateY(-2px);
+  }
+  .category-icon { font-size:32px; margin-bottom:10px; }
+  .category-name { font-size:13px; font-weight:600; color:var(--text); }
+  .category-count { font-size:12px; color:var(--slate); margin-top:4px; }
+
+  /* ── LISTINGS ── */
+  .listings-grid {
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+  }
+  .listing-card {
+    background:var(--white);
+    border:1.5px solid var(--border);
+    border-radius:var(--radius);
+    padding:24px;
+    transition:all 0.2s;
+    display:flex;
+    flex-direction:column;
+  }
+  .listing-card:hover {
+    border-color:var(--indigo);
+    box-shadow:var(--shadow-lg);
+    transform:translateY(-2px);
+  }
+  .listing-top {
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    margin-bottom:14px;
+  }
+  .verified-badge {
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    background:var(--green-light);
+    color:var(--green);
+    padding:4px 10px;
+    border-radius:6px;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.5px;
+  }
+  .listing-price {
+    font-size:22px;
+    font-weight:800;
+    color:var(--indigo);
+  }
+  .listing-title {
+    font-size:17px;
+    font-weight:700;
+    color:var(--text);
+    margin-bottom:8px;
+  }
+  .listing-desc {
+    font-size:14px;
+    color:var(--text-dim);
+    line-height:1.6;
+    flex:1;
+    margin-bottom:16px;
+  }
+  .listing-footer {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+  }
+  .listing-tag {
+    background:var(--indigo-light);
+    color:var(--indigo);
+    padding:4px 10px;
+    border-radius:6px;
+    font-size:12px;
+    font-weight:500;
+  }
+  .listing-seller { font-size:12px; color:var(--slate); }
+  .btn-buy {
+    width:100%;
+    padding:12px;
+    background:var(--indigo);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:14px;
+    font-family:'Inter',sans-serif;
+    transition:all 0.2s;
+  }
+  .btn-buy:hover { background:var(--indigo-dark); }
+
+  /* ── HOW IT WORKS ── */
+  .how-bg { background:var(--white); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+  .steps-grid {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:32px;
+  }
+  .step {
+    text-align:center;
+    padding:32px 20px;
+  }
+  .step-num {
+    width:48px;
+    height:48px;
+    background:var(--indigo);
+    color:#fff;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18px;
+    font-weight:800;
+    margin:0 auto 16px;
+  }
+  .step-title { font-size:16px; font-weight:700; color:var(--text); margin-bottom:8px; }
+  .step-desc { font-size:14px; color:var(--text-dim); line-height:1.6; }
+  .step-arrow {
+    position:absolute;
+    right:-20px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--border);
+    font-size:24px;
+  }
+
+  /* ── TRUST ── */
+  .trust-section {
+    background:var(--indigo);
+    color:#fff;
+    padding:64px 40px;
+    text-align:center;
+  }
+  .trust-section h2 { font-size:32px; font-weight:800; margin-bottom:16px; }
+  .trust-section p { font-size:16px; opacity:0.85; max-width:560px; margin:0 auto 32px; line-height:1.7; }
+  .trust-features {
+    display:flex;
+    justify-content:center;
+    gap:40px;
+    flex-wrap:wrap;
+    margin-top:32px;
+  }
+  .trust-feature {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-size:15px;
+    font-weight:500;
+  }
+  .trust-feature span { font-size:20px; }
+
+  /* ── TIP ── */
+  .tip-section {
+    background:var(--slate-light);
+    border-top:1px solid var(--border);
+    padding:64px 40px;
+    text-align:center;
+  }
+  .tip-section h2 { font-size:28px; font-weight:700; margin-bottom:12px; }
+  .tip-section p { font-size:15px; color:var(--text-dim); margin-bottom:28px; max-width:440px; margin-left:auto; margin-right:auto; }
+  .tip-amounts { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:20px; }
+  .tip-btn {
+    padding:12px 24px;
+    background:var(--white);
+    border:1.5px solid var(--border);
+    border-radius:8px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    font-family:'Inter',sans-serif;
+    transition:all 0.2s;
+    color:var(--text);
+  }
+  .tip-btn:hover { border-color:var(--indigo); color:var(--indigo); background:var(--indigo-light); }
+  .tip-btn.featured { background:var(--indigo); color:#fff; border-color:var(--indigo); }
+
+  /* ── SUBMIT BANNER ── */
+  .submit-banner {
+    background:linear-gradient(135deg, #eef2ff, #faf5ff);
+    border:1.5px solid rgba(79,70,229,0.2);
+    border-radius:16px;
+    padding:48px;
+    text-align:center;
+    margin:0 40px 64px;
+  }
+  .submit-banner h2 { font-size:28px; font-weight:700; margin-bottom:12px; }
+  .submit-banner p { font-size:15px; color:var(--text-dim); margin-bottom:24px; }
+
+  /* ── FOOTER ── */
+  footer {
+    background:var(--text);
+    color:rgba(255,255,255,0.6);
+    padding:40px;
+    text-align:center;
+  }
+  footer .footer-logo { font-size:18px; font-weight:700; color:#fff; margin-bottom:12px; }
+  footer .footer-logo span { color:#818cf8; }
+  footer p { font-size:13px; margin-bottom:16px; }
+  footer .footer-links { display:flex; gap:24px; justify-content:center; flex-wrap:wrap; }
+  footer .footer-links a { font-size:13px; color:rgba(255,255,255,0.5); transition:color 0.2s; }
+  footer .footer-links a:hover { color:#fff; }
+
+  @media(max-width:768px) {
+    .hero h1 { font-size:36px; }
+    .categories-grid { grid-template-columns:repeat(3,1fr); }
+    .listings-grid { grid-template-columns:1fr; }
+    .steps-grid { grid-template-columns:1fr 1fr; }
+    nav { padding:0 20px; }
+    .nav-links { display:none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Hardin<span>AI</span> Marketplace</div>
+  <ul class="nav-links">
+    <li><a href="#listings">Browse</a></li>
+    <li><a href="#submit">Submit Tool</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="https://hardinai.co.uk">Hardin AI</a></li>
+  </ul>
+  <a href="#submit" class="btn btn-primary">Submit Your Tool Free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✅ Every tool verified before listing</div>
+  <h1>The <span>Verified</span> AI<br>Marketplace</h1>
+  <p>Buy and sell tested, verified AI tools, bots and automation scripts. Every listing reviewed by our team before going live.</p>
+  <div class="hero-ctas">
+    <a href="#listings" class="btn btn-primary btn-lg">Browse Verified Tools</a>
+    <a href="#submit" class="btn btn-outline btn-lg">List Your Tool — Free</a>
+  </div>
+  <div class="search-bar">
+    <input type="text" placeholder="Search AI tools, bots, scripts...">
+    <button>Search</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item"><div class="stat-num">127</div><div class="stat-label">Verified Tools</div></div>
+  <div class="stat-item"><div class="stat-num">2,400+</div><div class="stat-label">Developers</div></div>
+  <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Tested & Verified</div></div>
+  <div class="stat-item"><div class="stat-num">Free</div><div class="stat-label">To List</div></div>
+  <div class="stat-item"><div class="stat-num">£0</div><div class="stat-label">Listing Fee</div></div>
+</div>
+
+<!-- CATEGORIES -->
+<div class="section">
+  <div class="section-title">Browse by Category</div>
+  <div class="section-sub">Find the right AI tool for your needs</div>
+  <div class="categories-grid">
+    <div class="category-card"><div class="category-icon">🤖</div><div class="category-name">AI Chatbots</div><div class="category-count">34 tools</div></div>
+    <div class="category-card"><div class="category-icon">📈</div><div class="category-name">Trading Bots</div><div class="category-count">18 tools</div></div>
+    <div class="category-card"><div class="category-icon">⚙️</div><div class="category-name">Automation</div><div class="category-count">29 tools</div></div>
+    <div class="category-card"><div class="category-icon">💬</div><div class="category-name">Prompt Packs</div><div class="category-count">22 tools</div></div>
+    <div class="category-card"><div class="category-icon">📄</div><div class="category-name">AI Templates</div><div class="category-count">15 tools</div></div>
+    <div class="category-card"><div class="category-icon">🔧</div><div class="category-name">Custom Bots</div><div class="category-count">9 tools</div></div>
+  </div>
+</div>
+
+<!-- LISTINGS -->
+<div class="section" id="listings">
+  <div class="section-title">Featured Verified Tools</div>
+  <div class="section-sub">Hand-picked and tested by the Hardin AI team</div>
+  <div class="listings-grid">
+
+    <div class="listing-card">
+      <div class="listing-top">
+        <span class="verified-badge">✓ VERIFIED</span>
+        <span class="listing-price">£29</span>
+      </div>
+      <div class="listing-title">GPT Customer Support Bot</div>
+      <div class="listing-desc">Fully trained chatbot for e-commerce customer support. Handles returns, FAQs and order tracking automatically 24/7.</div>
+      <div class="listing-footer">
+        <span class="listing-tag">AI Chatbots</span>
+        <span class="listing-seller">by anonymous seller</span>
+      </div>
+      <button class="btn-buy">View & Buy →</button>
+    </div>
+
+    <div class="listing-card">
+      <div class="listing-top">
+        <span class="verified-badge">✓ VERIFIED</span>
+        <span class="listing-price">£49</span>
+      </div>
+      <div class="listing-title">Stock Trading Signal Bot</div>
+      <div class="listing-desc">Python-based trading bot with RSI, MACD and EMA signals. Backtested on 2 years of historical data with 68% win rate.</div>
+      <div class="listing-footer">
+        <span class="listing-tag">Trading Bots</span>
+        <span class="listing-seller">by anonymous seller</span>
+      </div>
+      <button class="btn-buy">View & Buy →</button>
+    </div>
+
+    <div class="listing-card">
+      <div class="listing-top">
+        <span class="verified-badge">✓ VERIFIED</span>
+        <span class="listing-price">£19</span>
+      </div>
+      <div class="listing-title">LinkedIn Automation Script</div>
+      <div class="listing-desc">Automate connection requests and follow-up messages. Stays within LinkedIn limits. Includes setup guide and support.</div>
+      <div class="listing-footer">
+        <span class="listing-tag">Automation</span>
+        <span class="listing-seller">by anonymous seller</span>
+      </div>
+      <button class="btn-buy">View & Buy →</button>
+    </div>
+
+    <div class="listing-card">
+      <div class="listing-top">
+        <span class="verified-badge">✓ VERIFIED</span>
+        <span class="listing-price">£9</span>
+      </div>
+      <div class="listing-title">ChatGPT Prompt Pack (500 Prompts)</div>
+      <div class="listing-desc">500 tested and optimised prompts for marketing, coding, writing, business strategy and customer service.</div>
+      <div class="listing-footer">
+        <span class="listing-tag">Prompt Packs</span>
+        <span class="listing-seller">by anonymous seller</span>
+      </div>
+      <button class="btn-buy">View & Buy →</button>
+    </div>
+
+    <div class="listing-card">
+      <div class="listing-top">
+        <span class="verified-badge">✓ VERIFIED</span>
+        <span class="listing-price">£15</span>
+      </div>
+      <div class="listing-title">Invoice Generator AI</div>
+      <div class="listing-desc">Auto-generate professional invoices from simple text input. Supports multiple currencies and VAT calculations.</div>
+      <div class="listing-footer">
+        <span class="listing-tag">Automation</span>
+        <span class="listing-seller">by anonymous seller</span>
+      </div>
+      <button class="btn-buy">View & Buy →</button>
+    </div>
+
+    <div class="listing-card">
+      <div class="listing-top">
+        <span class="verified-badge">✓ VERIFIED</span>
+        <span class="listing-price">£35</span>
+      </div>
+      <div class="listing-title">SEO Content Bot</div>
+      <div class="listing-desc">Generate SEO-optimised blog posts, meta descriptions and social media content automatically from a single keyword.</div>
+      <div class="listing-footer">
+        <span class="listing-tag">AI Templates</span>
+        <span class="listing-seller">by anonymous seller</span>
+      </div>
+      <button class="btn-buy">View & Buy →</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="how-bg" id="how">
+  <div class="section">
+    <div class="section-title" style="text-align:center;">How It Works</div>
+    <div class="section-sub" style="text-align:center;">Simple, safe and transparent for buyers and sellers</div>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Submit Your Tool</div>
+        <div class="step-desc">Upload your digital AI asset with a description and price. Listing is completely free.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">We Test & Verify</div>
+        <div class="step-desc">Our team reviews and tests every submission. We check it works, is safe, and matches the description.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Gets Listed</div>
+        <div class="step-desc">Approved tools go live on the marketplace with a Verified badge. Buyers can find and purchase instantly.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-title">You Earn</div>
+        <div class="step-desc">Buyers purchase your tool. Payment is processed securely and delivered to you. No contact details shared.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRUST -->
+<div class="trust-section">
+  <h2>Every Tool is Tested Before Listing</h2>
+  <p>No broken code. No scams. No misleading descriptions. Every digital asset on this marketplace has been reviewed and tested by the Hardin AI team before it goes live.</p>
+  <a href="#submit" class="btn btn-primary btn-lg" style="background:#fff;color:var(--indigo);">Submit Your Tool Free</a>
+  <div class="trust-features">
+    <div class="trust-feature"><span>✅</span> Code reviewed</div>
+    <div class="trust-feature"><span>🔒</span> Security checked</div>
+    <div class="trust-feature"><span>📋</span> Description verified</div>
+    <div class="trust-feature"><span>🚫</span> No contact details shared</div>
+    <div class="trust-feature"><span>💳</span> Secure payments</div>
+  </div>
+</div>
+
+<!-- SUBMIT BANNER -->
+<div class="submit-banner" id="submit">
+  <div style="font-size:40px;margin-bottom:16px;">🚀</div>
+  <h2>List Your AI Tool for Free</h2>
+  <p>Have an AI tool, bot or script to sell? Submit it for free. We'll review it and list it on the marketplace. You set the price. You keep the earnings.</p>
+  <a href="mailto:info@hardinai.co.uk?subject=Marketplace Submission" class="btn btn-primary btn-lg">Submit Your Tool →</a>
+  <p style="margin-top:16px;font-size:13px;color:var(--slate);">Email us at info@hardinai.co.uk with your tool and description</p>
+</div>
+
+<!-- TIP -->
+<div class="tip-section">
+  <div style="font-size:48px;margin-bottom:16px;">❤️</div>
+  <h2>Love the Marketplace?</h2>
+  <p>We built this platform to make AI tools accessible to everyone. If it's been useful, consider supporting us with a small tip.</p>
+  <div class="tip-amounts">
+    <button class="tip-btn">☕ £3</button>
+    <button class="tip-btn featured">🍕 £5</button>
+    <button class="tip-btn">🎉 £10</button>
+    <button class="tip-btn">💎 £25</button>
+  </div>
+  <p style="font-size:13px;color:var(--slate);">Tips go directly to maintaining and improving the marketplace</p>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Hardin<span>AI</span> Marketplace</div>
+  <p>A verified marketplace for AI tools, bots and digital assets.<br>Part of Hardin AI Solutions — London, UK.</p>
+  <div class="footer-links">
+    <a href="https://hardinai.co.uk">Hardin AI</a>
+    <a href="#">Browse Tools</a>
+    <a href="#">Submit a Tool</a>
+    <a href="#">How It Works</a>
+    <a href="mailto:info@hardinai.co.uk">Contact</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+  </div>
+  <p style="margin-top:24px;font-size:12px;">© 2026 Hardin AI Solutions Ltd. All rights reserved. Company No. 17149514</p>
+</footer>
+
+</body>
+</html>
